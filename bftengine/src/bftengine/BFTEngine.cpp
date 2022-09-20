@@ -14,6 +14,7 @@
 #include "Replica.hpp"
 #include "ReplicaImp.hpp"
 #include "ReadOnlyReplica.hpp"
+#include "ArchivalNodeReplica.hpp"
 #include "ReplicaLoader.hpp"
 #include "DebugPersistentStorage.hpp"
 #include "PersistentStorageImp.hpp"
@@ -274,6 +275,24 @@ IReplica::IReplicaPtr IReplica::createNewRoReplica(const ReplicaConfig &replicaC
   auto msgReceiver = std::make_shared<MsgReceiver>(incomingMsgsStorage);
   auto msgsCommunicator = std::make_shared<MsgsCommunicator>(communication, incomingMsgsStorage, msgReceiver);
   replicaInternal->replica_ = std::make_unique<ReadOnlyReplica>(
+      replicaConfig, requestsHandler, stateTransfer, msgsCommunicator, msgHandlers, timers, metadataStorage);
+  return replicaInternal;
+}
+
+IReplica::IReplicaPtr IReplica::createNewANReplica(const ReplicaConfig &replicaConfig,
+                                                   std::shared_ptr<IRequestsHandler> requestsHandler,
+                                                   IStateTransfer *stateTransfer,
+                                                   bft::communication::ICommunication *communication,
+                                                   MetadataStorage *metadataStorage) {
+  auto replicaInternal = std::make_unique<ReplicaInternal>();
+  auto msgHandlers = std::make_shared<MsgHandlersRegistrator>();
+  auto incomingMsgsStorageImpPtr =
+      std::make_unique<IncomingMsgsStorageImp>(msgHandlers, timersResolution, replicaConfig.replicaId);
+  auto &timers = incomingMsgsStorageImpPtr->timers();
+  std::shared_ptr<IncomingMsgsStorage> incomingMsgsStorage{std::move(incomingMsgsStorageImpPtr)};
+  auto msgReceiver = std::make_shared<MsgReceiver>(incomingMsgsStorage);
+  auto msgsCommunicator = std::make_shared<MsgsCommunicator>(communication, incomingMsgsStorage, msgReceiver);
+  replicaInternal->replica_ = std::make_unique<ArchivalNodeReplica>(
       replicaConfig, requestsHandler, stateTransfer, msgsCommunicator, msgHandlers, timers, metadataStorage);
   return replicaInternal;
 }

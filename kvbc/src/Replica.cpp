@@ -411,6 +411,9 @@ std::optional<categorization::Value> Replica::get(const std::string &category_id
 }
 
 std::optional<categorization::Value> Replica::getLatest(const std::string &category_id, const std::string &key) const {
+  if (m_kvBlockchain == nullptr) {
+    LOG_INFO(logger, "Tarun in Replica::getLatest, m_kvBlockchain is null ");
+  }
   return m_kvBlockchain->getLatest(category_id, key);
 }
 
@@ -547,7 +550,7 @@ Replica::Replica(ICommunication *comm,
     stConfig.gettingMissingBlocksSummaryWindowSize = 50;
   }
 
-  if (!replicaConfig.isReadOnly) {
+  if (true) {
     const auto linkStChain = true;
     {
       auto [it, inserted] = kvbc_categories.insert(

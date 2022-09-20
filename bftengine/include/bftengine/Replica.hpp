@@ -113,6 +113,12 @@ class IReplica {
                                         bft::communication::ICommunication *,
                                         MetadataStorage *);
 
+  static IReplicaPtr createNewANReplica(const ReplicaConfig &,
+                                        std::shared_ptr<IRequestsHandler>,
+                                        IStateTransfer *,
+                                        bft::communication::ICommunication *,
+                                        MetadataStorage *);
+
   virtual ~IReplica() = default;
 
   virtual bool isRunning() const = 0;
