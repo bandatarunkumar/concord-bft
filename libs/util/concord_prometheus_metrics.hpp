@@ -9,7 +9,8 @@
 // these subcomponents is subject to the terms and conditions of the subcomponent's license, as noted in the LICENSE
 // file.
 
-#pragma once
+#ifndef UTILS_CONCORD_PROMETHEUS_METRICS_HPP
+#define UTILS_CONCORD_PROMETHEUS_METRICS_HPP
 
 #include <prometheus/counter.h>
 #include <prometheus/exposer.h>
@@ -244,3 +245,4 @@ class AccumulativePrometheusTimeRecorder {
 };
 
 }  // namespace concord::utils
+#endif  // UTILS_CONCORD_PROMETHEUS_METRICS_HPP
